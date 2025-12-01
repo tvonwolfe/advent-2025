@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+require_relative 'part1'
+require_relative 'part2'
+
+test = ARGV.first == "--test"
+
+input_file = "#{test ? 'test_' : ''}input"
+
+input = File.readlines(input_file).map(&:strip)
+
+Part1.run(input)
+Part2.run(input)

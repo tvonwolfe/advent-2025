@@ -57,3 +57,4 @@ build-iPhoneSimulator/
 
 # Ruby LSP directory
 .ruby-lsp/
+/day*/*input
