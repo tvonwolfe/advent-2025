@@ -1,0 +1,65 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'date'
+require 'pathname'
+
+START_DAY = Date.parse("2025-12-01").freeze
+END_DAY = Date.parse("2025-12-12").freeze
+EVENT_RANGE = (START_DAY..END_DAY).freeze
+
+
+dirname = if ARGV.empty?
+            current_date = Date.today
+            exit 1 unless (EVENT_RANGE).include?(current_date)
+
+            days_diff = (current_date - START_DAY).to_i + 1
+            "day#{days_diff.to_s.rjust(2, '0')}"
+          else
+            index = ARGV.first.to_i
+
+            "day#{index.to_s.rjust(2, '0')}"
+          end
+
+exit 0 if Dir.exist?(dirname)
+
+Dir.mkdir(dirname)
+
+[1, 2].each do |part|
+  file_path = Pathname("#{dirname}/part#{part}.rb")
+
+  File.open(file_path, "w") do |file|
+    file.write <<~RUBY
+      # frozen_string_literal: true
+
+      require_relative "../runner"
+
+      class Part#{part} < Runner
+        def run
+          # do stuff, return result
+        end
+      end
+    RUBY
+  end
+end
+
+File.open(Pathname("#{dirname}/run"), "w") do |file|
+  file.chmod(0755) # make it executable
+  file.write <<~RUBY
+    #!/usr/bin/env ruby
+
+    # frozen_string_literal: true
+    require_relative 'part1'
+    require_relative 'part2'
+
+    test = ARGV.first == "--test"
+
+    input_file = "\#\{test ? 'test_' : ''\}input"
+
+    input = File.readlines(input_file).map(&:strip)
+
+    Part1.run(input)
+    Part2.run(input)
+  RUBY
+end
