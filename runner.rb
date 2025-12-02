@@ -1,6 +1,6 @@
 class Runner
-  def self.run(*)
-    result = new(*).run
+  def self.run(...)
+    result = new(...).run
     return unless result
 
     puts "#{name} Result: #{result}"
