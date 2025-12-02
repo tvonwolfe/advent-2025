@@ -33,24 +33,24 @@ class Part1 < Runner
 
   REGEX = /(L|R)(\d+)/
 
-    def run
-      dial = Dial.new
-      zero_count = 0
+  def run
+    dial = Dial.new
+    zero_count = 0
 
-      input.each do |line|
-        _, direction, distance = REGEX.match(line).to_a
-        distance = Integer(distance)
-        direction = case direction
-                    when "L"
-                      :left
-                    when "R"
-                      :right
-                    end
+    input.each do |line|
+      _, direction, distance = REGEX.match(line).to_a
+      distance = Integer(distance)
+      direction = case direction
+                  when "L"
+                    :left
+                  when "R"
+                    :right
+                  end
 
-        dial.turn(direction, distance)
-        zero_count +=1 if dial.position.zero?
-      end
-
-      zero_count
+      dial.turn(direction, distance)
+      zero_count +=1 if dial.position.zero?
     end
+
+    zero_count
+  end
 end
