@@ -47,7 +47,7 @@ end
 File.open(Pathname("#{dirname}/run"), "w") do |file|
   file.chmod(0755) # make it executable
   file.write <<~RUBY
-    #!/usr/bin/env ruby
+    #!/usr/bin/env -S ruby --jit
 
     # frozen_string_literal: true
     require_relative 'part1'
