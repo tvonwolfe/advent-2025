@@ -12,35 +12,41 @@ class Part2 < Runner
       (start_id..end_id)
     end
 
+    ranges = ranges.sort_by(&:begin)
+
     result_ranges = []
 
     ranges.each do |range|
       next result_ranges << range if result_ranges.empty?
 
       result_ranges.each_with_index do |other_range, index|
-        puts "range: #{range}, other range: #{other_range}"
+        # an existing range covers the current range
+        if other_range.cover?(range)
+          break
+        end
+
+        # this range covers an existing range. replace it
+        if range.cover?(other_range)
+          result_ranges[index] = range
+          break
+        end
+
         min_range = [range, other_range].min_by(&:begin)
         max_range = [range, other_range].max_by(&:end)
 
-        # an existing range covers the current range
-        next if (other_range == min_range) && (other_range == max_range)
-
-        # this range covers an existing range. replace it
-        break result_ranges[index] = range if range == min_range && range == max_range
-
         # overlap. create new range and replace the one at this index.
-        if min_range.end > max_range.begin
+        if min_range.end >= max_range.begin
           new_range = min_range.begin..max_range.end
           result_ranges[index] = new_range
           break
         end
 
-        # no overlap.
-        break result_ranges << range
+        if index == result_ranges.length - 1
+          result_ranges << range 
+        end
       end
     end
 
-    puts "#{result_ranges}"
     result_ranges.sum(&:size)
   end
 end
