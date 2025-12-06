@@ -3,7 +3,79 @@
 require_relative "../runner"
 
 class Part2 < Runner
+  class Grid
+    Point = Struct.new(:x, :y, :occupied) do
+      def initialize(x:,y:,occupied:) = super(x, y, occupied)
+
+      def occupied? = !!occupied
+
+      def clear! = self.occupied = false
+
+      def to_s = "(#{x},#{y})"
+    end
+
+    attr_reader :rows, :length, :height
+
+    def initialize(rows)
+      @rows = rows
+      @length = rows.first.length
+      @height = rows.length
+    end
+
+    def accessible_points
+      points = []
+      rows.each do |row|
+        row.each do |point|
+          next unless point.occupied?
+
+          is_accessible = adjacent_points(point).count(&:occupied?) < 4
+
+          points << point if is_accessible
+        end
+      end
+
+      points
+    end
+
+    def adjacent_points(point)
+      x = point.x
+      y = point.y
+
+      [
+        [x - 1, y - 1],
+        [x - 1, y],
+        [x - 1, y + 1],
+        [x, y - 1],
+        [x, y + 1],
+        [x + 1, y - 1],
+        [x + 1, y],
+        [x + 1, y + 1]
+      ].map do |other_x, other_y|
+        next if other_x.negative? || other_y.negative?
+        next if other_x > length - 1 || other_y > height - 1
+
+        rows[other_y][other_x]
+      end.compact
+    end
+  end
+
   def run
-    # do stuff, return result
+    rows = input.map.with_index do |line, y|
+      line.chars.map.with_index do |char, x|
+        Grid::Point.new(x:, y:, occupied: char == "@")
+      end
+    end
+
+    grid = Grid.new(rows)
+
+    total = 0
+
+    until grid.accessible_points.length.zero?
+      accessible_points = grid.accessible_points
+      total += accessible_points.length
+      accessible_points.each(&:clear!)
+    end
+
+    total
   end
 end
