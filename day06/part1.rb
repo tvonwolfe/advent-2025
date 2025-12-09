@@ -12,10 +12,10 @@ class Part1 < Runner
   end
 
   def input
-    super.map!(&:split)
+    splitted = super.map(&:split)
 
-    0.upto(super.first.length-1).map do |i|
-      super.map { |line| line[i] }
+    0.upto(splitted.first.length-1).map do |i|
+      splitted.map { |line| line[i] }
     end
   end
 end

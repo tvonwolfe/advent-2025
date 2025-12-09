@@ -8,7 +8,9 @@ test = ARGV.first == "--test"
 
 input_file = "#{test ? 'test_' : ''}input"
 
-input = File.readlines(input_file).map(&:strip)
+input = File.readlines(input_file).map do |line|
+  line.gsub(/\n/, "")
+end
 
 Part1.run(input)
 Part2.run(input)
