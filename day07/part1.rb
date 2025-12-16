@@ -5,9 +5,9 @@ require_relative "../runner"
 class Part1 < Runner
   SPLITTER = "^"
   TACHYON = "|"
+  START = "S"
 
   def run
-    input.first.gsub!("S", TACHYON)
     result = []
     num_splits = 0
 
@@ -18,7 +18,7 @@ class Part1 < Runner
       result_line = current_line.clone
 
       previous_line.chars.each_with_index do |char_above, char_index|
-        next unless char_above == TACHYON
+        next unless char_above == TACHYON || char_above == START
 
         if current_line[char_index] == SPLITTER
           result_line[char_index - 1] = TACHYON
