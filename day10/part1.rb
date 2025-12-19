@@ -3,71 +3,50 @@
 require_relative "../runner"
 
 class Part1 < Runner
-  class Machine
-    attr_reader :lights, :on_state, :buttons, :num_button_presses
+  def num_presses(on_state, buttons)
+    press_count = 1
+    return press_count if buttons.include?(on_state)
 
-    def initialize(on_state, buttons)
-      @lights = Array.new(on_state.length, false)
-      @on_state = on_state
-      @buttons = buttons
-      @num_button_presses = 0
-    end
-
-    def press_button(button_index)
-      if button_index.negative? || button_index > buttons.length - 1
-        raise ArgumentError, "Invalid button index: #{button_index}"
+    loop do
+      press_count += 1
+      result_states = buttons.permutation(press_count).map do |permutation|
+        permutation.reduce(:^)
       end
 
-      buttons[button_index].each { |i| lights[i] = !lights[i] }
-      self.num_button_presses += 1
+      break press_count if result_states.include?(on_state)
     end
-
-    def on? = lights == on_state
-
-    private
-
-    attr_writer :num_button_presses
   end
 
   def run
-    min_presses = input.map do |machine|
-
-      permutations = [machine]
-      next_permutations = []
-
-      initialized_machine = loop do
-        permutations.each do |permutation|
-          machine.buttons.size.times do |i|
-            next_permutation = permutation.clone
-            next_permutation.press_button(i)
-
-
-            next_permutations << next_permutation
-          end
-
-          permutations = next_permutations
-          next_permutations = []
-
-        end
-
-        done = permutations.find(&:on?)
-        break done unless done.nil?
-      end
-
-      initialized_machine.num_button_presses
+    input.reduce(0) do |sum, (on_state, buttons)|
+      sum + num_presses(on_state, buttons)
     end
-
-    min_presses.sum
   end
 
   def input
     super.map do |line|
-      on_state = line.match(/\[(.*)\]/).to_a[1]
-      buttons = line.match(/](.*){/).to_a[1].split.map do |button_tuple_str|
+      on_state_str = line.match(/\[(.*)\]/).to_a[1]
+      buttons_indices = line.match(/](.*){/).to_a[1].split.map do |button_tuple_str|
         button_tuple_str[1..-2].split(",").map(&:to_i)
       end
 
-      Machine.new(on_state, buttons)
+      on_state = 0
+      buttons = []
+      on_state_str.chars.reverse.each_with_index do |char, index|
+        on_state |= 1 << index if (char == "#")
+      end
+
+      buttons_indices.each do |button_indices|
+        button = 0
+
+        button_indices.each do |index|
+          button |= 1 << on_state_str.length - index - 1
+        end
+
+        buttons << button
+      end
+
+      [on_state, buttons]
     end
   end
 end
